@@ -1,124 +1,237 @@
-// load products.json and render
-const API = "products.json"; // local file in repo root
+// ========== CONFIG - EDIT THESE ==========
+const SHOP_WHATSAPP = "919413604420"; // your number (countrycode + number, no +)
+const FORM_BASE = ""; // optional Google Form base prefill URL (leave empty to disable form submit)
+// map if you want programmatic entries: ENTRY_PRODUCT, ENTRY_QTY... (leave blank if unused)
+const ENTRY_PRODUCT = ""; const ENTRY_QTY = ""; const ENTRY_NAME = ""; const ENTRY_ADDRESS = ""; const ENTRY_PHONE = "";
+// =========================================
+
+const YEAR_EL = document.getElementById("year");
+if (YEAR_EL) YEAR_EL.innerText = new Date().getFullYear();
+document.getElementById("shop-phone").innerText = SHOP_WHATSAPP.replace(/^91/,"");
+
+// state
 let PRODUCTS = [];
+let CART = {}; // {productId: qty}
 
-const list = document.getElementById("product-list");
-const searchInput = document.getElementById("search-input");
-const sortSelect = document.getElementById("sort-select");
-const modal = document.getElementById("modal");
-const modalBody = document.getElementById("modal-body");
-const modalClose = document.getElementById("modal-close");
-
-modalClose.onclick = ()=>modal.classList.add("hidden");
+// helpers
+const $ = (sel)=>document.querySelector(sel);
+const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
 
 function fetchProducts(){
-  fetch(API).then(r=>r.json()).then(data=>{
+  fetch('products.json').then(r=>r.json()).then(data=>{
     PRODUCTS = data;
     renderProducts(PRODUCTS);
+    updateCartCount();
   }).catch(err=>{
-    list.innerHTML = "<p style='color:#b00'>Error loading products.json. Make sure file exists in repo root.</p>";
+    console.error(err);
+    document.getElementById('product-list').innerHTML = "<p style='color:#b00'>Error loading products.json</p>";
   });
 }
 
-function renderProducts(arr){
-  list.innerHTML = "";
-  if(!arr.length){ list.innerHTML = "<p>No products found.</p>"; return; }
-  arr.forEach(p=>{
-    const el = document.createElement("div");
-    el.className = "card";
+function renderProducts(list){
+  const container = document.getElementById('product-list');
+  container.innerHTML = '';
+  list.forEach(p=>{
+    const el = document.createElement('article');
+    el.className = 'card';
     el.innerHTML = `
-      <h3>${p.name}</h3>
-      <p>${p.desc || ""}</p>
-      <div><span class="price">₹${p.price}</span> ${p.offer? `<span class="offer">${p.offer}% OFF</span>` : ""}</div>
+      <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Medicine'"/>
+      <h4>${p.name}</h4>
+      <p>${p.description}</p>
+      <div class="row">
+        <div>
+          <span class="price">₹${p.price}</span>
+          ${p.offer? `<span class="offer">${p.offer}% OFF</span>` : ''}
+        </div>
+        <div class="cat-tag">${p.category}</div>
+      </div>
       <div class="actions">
-        <button class="btn primary order-now" data-id="${p.id}">Order</button>
-        <button class="btn" data-id="${p.id}" onclick="addToCart('${p.id}')">Add to cart</button>
-      </div>`;
-    list.appendChild(el);
+        <button class="btn btn-add" data-id="${p.id}">Add to Cart</button>
+        <button class="btn btn-ws" data-id="${p.id}">Buy (WhatsApp)</button>
+        <button class="btn btn-form" data-id="${p.id}">Order (Form)</button>
+      </div>
+    `;
+    container.appendChild(el);
   });
 
-  document.querySelectorAll(".order-now").forEach(b=>{
-    b.addEventListener("click", e=>{
-      openOrderModal(e.target.dataset.id);
-    });
+  // attach listeners
+  $$('.btn-add').forEach(b=>b.onclick = e=>{ addToCart(e.target.dataset.id, 1); });
+  $$('.btn-ws').forEach(b=>b.onclick = e=>{ buyViaWhatsApp(e.target.dataset.id); });
+  $$('.btn-form').forEach(b=>b.onclick = e=>{ orderViaForm(e.target.dataset.id); });
+}
+
+// CART functions
+function addToCart(pid, qty=1){
+  CART[pid] = (CART[pid] || 0) + qty;
+  saveCart();
+  updateCartCount();
+  toast("Added to cart");
+}
+function removeFromCart(pid){ delete CART[pid]; saveCart(); renderCart(); updateCartCount(); }
+function changeQty(pid, q){ if(q<=0) removeFromCart(pid); else { CART[pid]=q; saveCart(); renderCart(); updateCartCount(); } }
+function saveCart(){ localStorage.setItem('hh_cart', JSON.stringify(CART)); }
+function loadCart(){ try{ CART = JSON.parse(localStorage.getItem('hh_cart')||'{}'); }catch(e){ CART={}; } }
+function updateCartCount(){ const c = Object.values(CART).reduce((s,n)=>s+Number(n),0); document.getElementById('cart-count').innerText = c; }
+
+// Modal & cart UI
+const modal = document.getElementById('modal');
+const modalBody = document.getElementById('modal-body');
+document.getElementById('close-modal').onclick = ()=>closeModal();
+
+function openModal(){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
+function closeModal(){ modal.classList.add('hidden'); modal.setAttribute('aria-hidden','true'); }
+
+// render cart
+function renderCart(){
+  loadCart();
+  const items = Object.keys(CART).map(id=>{
+    const prod = PRODUCTS.find(p=>p.id===id);
+    return { ...prod, qty: CART[id] };
   });
+  let html = `<h2>Your Cart</h2>`;
+  if(!items.length){ html += '<p>Cart is empty</p>'; html += `<div style="text-align:right"><button id="close-cart" class="btn">Close</button></div>`; modalBody.innerHTML = html; openModal(); document.getElementById('close-cart').onclick=closeModal; return; }
+
+  html += `<div class="cart-list">`;
+  items.forEach(it=>{
+    html += `<div class="cart-item">
+      <img src="${it.image}" onerror="this.src='https://via.placeholder.com/80x80?text=Img'"/>
+      <div style="flex:1">
+        <div style="font-weight:700">${it.name}</div>
+        <div class="qty">
+          <button class="btn" data-act="dec" data-id="${it.id}">-</button>
+          <span style="min-width:28px;text-align:center">${it.qty}</span>
+          <button class="btn" data-act="inc" data-id="${it.id}">+</button>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div>₹${it.price * it.qty}</div>
+        <button class="btn" data-act="remove" data-id="${it.id}">Remove</button>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Total & checkout
+  const total = items.reduce((s,it)=>s+it.price*it.qty,0);
+  html += `<div style="text-align:right;font-weight:800">Total: ₹${total}</div>`;
+  html += `<div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+    <button id="checkout-form" class="btn btn-form">Checkout (Form)</button>
+    <button id="checkout-ws" class="btn btn-ws">Checkout (WhatsApp)</button>
+    <button id="close-cart" class="btn">Close</button>
+  </div>`;
+
+  modalBody.innerHTML = html;
+  openModal();
+
+  // events
+  $$('.cart-item button[data-act]').forEach(b=>{
+    b.onclick = (e)=>{
+      const id = e.target.dataset.id; const act = e.target.dataset.act;
+      if(act==='inc') changeQty(id, CART[id]+1);
+      if(act==='dec') changeQty(id, CART[id]-1);
+      if(act==='remove') removeFromCart(id);
+      renderCart();
+    };
+  });
+  document.getElementById('close-cart').onclick = closeModal;
+  document.getElementById('checkout-ws').onclick = ()=>checkoutViaWhatsApp(items);
+  document.getElementById('checkout-form').onclick = ()=>checkoutViaForm(items);
 }
 
-function addToCart(id){
-  alert("Added to cart (demo). Use Order to place recent order via WhatsApp or form.");
+// Quick toast
+function toast(msg){ const el = document.createElement('div'); el.style = 'position:fixed;right:18px;bottom:18px;background:#222;color:#fff;padding:10px;border-radius:8px;z-index:9999'; el.innerText = msg; document.body.appendChild(el); setTimeout(()=>el.remove(),1500); }
+
+// Buy single item via whatsapp
+function buyViaWhatsApp(pid){
+  const p = PRODUCTS.find(x=>x.id===pid);
+  const msg = `Hello, I'd like to buy:\n${p.name}\nQty: 1\nPrice: ₹${p.price}\nPlease confirm availability and delivery.\n- Health Hub Pharmacy`;
+  window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
-// search & sort
-document.getElementById("search-btn").onclick = applyFilters;
-searchInput.onkeyup = (e)=>{ if(e.key === "Enter") applyFilters(); };
-sortSelect.onchange = applyFilters;
+// Order single via form (prefill)
+function orderViaForm(pid){
+  const p = PRODUCTS.find(x=>x.id===pid);
+  if(!FORM_BASE){ // fallback to open modal quick-order
+    openQuickOrderModal(p);
+    return;
+  }
+  // if FORM_BASE & ENTRY_* configured, open prefilled URL
+  const params = new URLSearchParams();
+  if(ENTRY_PRODUCT) params.set(ENTRY_PRODUCT, p.name);
+  if(ENTRY_QTY) params.set(ENTRY_QTY, 1);
+  // Other entries left empty for customer to fill
+  window.open(FORM_BASE + '&' + params.toString(),'_blank');
+}
 
-function applyFilters(){
-  const q = searchInput.value.trim().toLowerCase();
+// Checkout via WhatsApp (cart)
+function checkoutViaWhatsApp(items){
+  let text = `New Order from Website:%0A`;
+  items.forEach(it=> text += `${it.name} x ${it.qty} = ₹${it.price * it.qty}%0A`);
+  const total = items.reduce((s,it)=>s+it.price*it.qty,0);
+  text += `Total: ₹${total}%0APlease confirm availability & delivery.`;
+  window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${text}`,'_blank');
+  closeModal();
+}
+
+// Checkout via Google Form (cart)
+function checkoutViaForm(items){
+  if(!FORM_BASE){ openQuickOrderModal(null, items); return; }
+  // Build a prefill for form if ENTRY_* set. We'll append product details into a text field (if available).
+  let productList = items.map(it=> `${it.name} x ${it.qty}`).join('; ');
+  const params = new URLSearchParams();
+  if(ENTRY_PRODUCT) params.set(ENTRY_PRODUCT, productList);
+  if(ENTRY_QTY) params.set(ENTRY_QTY, items.reduce((s,it)=>s+it.qty,0));
+  window.open(FORM_BASE + '&' + params.toString(), '_blank');
+  closeModal();
+}
+
+// Quick order modal (single or cart) to collect customer name/address when FORM not configured
+function openQuickOrderModal(product=null, items=null){
+  let html = `<h3>Place Order</h3>`;
+  if(product) html += `<div style="font-weight:700">${product.name} - ₹${product.price}</div><br>`;
+  else if(items) html += `<div style="font-weight:700">Cart Items: ${items.length}</div><br>`;
+  html += `<label>Your name <input id="co-name" /></label><br><label>Phone <input id="co-phone" /></label><br><label>Address <textarea id="co-address"></textarea></label><br>`;
+  html += `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+    <button id="co-ws" class="btn btn-ws">Send via WhatsApp</button>
+    <button id="co-close" class="btn">Cancel</button>
+  </div>`;
+  modalBody.innerHTML = html; openModal();
+  document.getElementById('co-close').onclick = closeModal;
+  document.getElementById('co-ws').onclick = ()=>{
+    const name = document.getElementById('co-name').value || 'Customer';
+    const phone = document.getElementById('co-phone').value || '';
+    const addr = document.getElementById('co-address').value || '';
+    let text = `Order from ${name}%0APhone: ${phone}%0AAddress: ${addr}%0A`;
+    if(product) text += `${product.name} x1 = ₹${product.price}%0A`;
+    else if(items) items.forEach(it=> text += `${it.name} x${it.qty} = ₹${it.price*it.qty}%0A`);
+    window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(text)}`,'_blank');
+    closeModal();
+  };
+}
+
+// SEARCH / FILTER / SORT
+function applyControls(){
+  const q = (document.getElementById('search').value || '').toLowerCase().trim();
+  const cat = document.getElementById('filter-cat').value;
+  const sort = document.getElementById('sort-select').value;
   let filtered = PRODUCTS.filter(p=>{
-    return p.name.toLowerCase().includes(q) || (p.desc && p.desc.toLowerCase().includes(q)) || String(p.price).includes(q);
+    if(cat !== 'all' && p.category !== cat) return false;
+    if(!q) return true;
+    return p.name.toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q);
   });
-  const sort = sortSelect.value;
-  if(sort === "price-asc") filtered.sort((a,b)=>a.price-b.price);
-  if(sort === "price-desc") filtered.sort((a,b)=>b.price-a.price);
+  if(sort === 'price-asc') filtered.sort((a,b)=>a.price-b.price);
+  if(sort === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
   renderProducts(filtered);
 }
 
-// modal order
-function openOrderModal(pid){
-  const p = PRODUCTS.find(x=>x.id===pid);
-  modalBody.innerHTML = `
-    <h3>Order: ${p.name}</h3>
-    <label>Qty: <input id="mqty" type="number" value="1" min="1"/></label><br><br>
-    <label>Name: <input id="mname" type="text"/></label><br><br>
-    <label>Phone: <input id="mphone" type="text"/></label><br><br>
-    <label>Address: <textarea id="maddr"></textarea></label><br><br>
-    <div style="display:flex;gap:8px;">
-      <button id="mwh" class="btn primary">Order on WhatsApp</button>
-      <button id="mform" class="btn">Order via Google Form</button>
-    </div>`;
-  modal.classList.remove("hidden");
+// attach controls
+document.getElementById('search').addEventListener('input', applyControls);
+document.getElementById('filter-cat').addEventListener('change', applyControls);
+document.getElementById('sort-select').addEventListener('change', applyControls);
+$$('.cat').forEach(el=> el.onclick = (e)=>{ $$('.cat').forEach(x=>x.classList.remove('active')); e.target.classList.add('active'); document.getElementById('filter-cat').value = e.target.dataset.cat; applyControls(); });
+document.getElementById('view-cart').onclick = renderCart;
+document.getElementById('show-offers').onclick = ()=> renderProducts(PRODUCTS.filter(p=>p.offer && p.offer>0));
 
-  document.getElementById("mwh").onclick = ()=>{
-    const msg = `Order: ${p.name}\nQty: ${document.getElementById("mqty").value}\nName: ${document.getElementById("mname").value}\nPhone: ${document.getElementById("mphone").value}\nAddress: ${document.getElementById("maddr").value}`;
-    window.open(`https://wa.me/919413604420?text=${encodeURIComponent(msg)}`,"_blank");
-    modal.classList.add("hidden");
-  };
-
-  document.getElementById("mform").onclick = ()=>{
-    const base = "https://docs.google.com/forms/d/e/1FAIpQLSfI-oVq-HHuqNOYqR_SXlM56MsiBW_30Fpum5h3MTkEqHlSTQ/viewform?usp=pp_url";
-    const params = new URLSearchParams();
-    params.set("entry.1967942519", p.name);
-    params.set("entry.1010592062", document.getElementById("mqty").value);
-    params.set("entry.1724801920", document.getElementById("mname").value);
-    params.set("entry.682598387", document.getElementById("mphone").value);
-    params.set("entry.951409499", document.getElementById("maddr").value);
-    window.open(base + "&" + params.toString(), "_blank");
-    modal.classList.add("hidden");
-  };
-}
-
-// upload prescription (opens modal with quick WA flow)
-document.getElementById("upload-prescription").onclick = ()=>{
-  modalBody.innerHTML = `<h3>Upload Prescription</h3>
-    <p>From phone: click WhatsApp button & attach your photo. Or use Google Form to upload file (if form has file upload).</p>
-    <label>Your phone: <input id="pres-phone" type="text" /></label><br><br>
-    <button id="send-pres" class="btn primary">Open WhatsApp (attach file)</button>`;
-  document.getElementById("send-pres").onclick = ()=>{
-    const phone = document.getElementById("pres-phone").value || "";
-    const msg = `Hello, I want to upload prescription. Contact: ${phone}`;
-    window.open(`https://wa.me/919413604420?text=${encodeURIComponent(msg)}`,"_blank");
-    modal.classList.add("hidden");
-  };
-  modal.classList.remove("hidden");
-};
-
-// floating order btn
-document.getElementById("floating-order-btn").onclick = ()=>{
-  modalBody.innerHTML = `<h3>Quick Order</h3><p>Use product Order button or click WhatsApp to place order.</p><a class="btn primary" href="https://wa.me/919413604420" target="_blank">Order on WhatsApp</a>`;
-  modal.classList.remove("hidden");
-};
-
-document.getElementById("year").innerText = new Date().getFullYear();
-
+// load cart & products
+loadCart();
 fetchProducts();
