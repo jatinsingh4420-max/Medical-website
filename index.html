@@ -7,55 +7,55 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="topbar"><div class="container">Health Hub Pharmacy • Call: 9413604420</div></div>
-
-  <header class="hero">
-    <div class="container hero-inner">
-      <div class="brand">
-        <h1>Health Hub Pharmacy</h1>
-        <p class="subtitle">Authentic Medicines • Home Delivery</p>
-      </div>
-
-      <div class="search-block">
-        <input id="search-input" type="search" placeholder="Search medicine or price..." />
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">Health Hub Pharmacy</div>
+      <nav class="nav-right">
+        <input id="search" placeholder="Search medicines, e.g. Paracetamol" />
+        <select id="filter-cat">
+          <option value="all">All categories</option>
+          <option value="generic">Generic</option>
+          <option value="ethical">Ethical</option>
+          <option value="daily">Daily Use</option>
+        </select>
         <select id="sort-select">
           <option value="relevance">Sort: Relevance</option>
           <option value="price-asc">Price ↑</option>
           <option value="price-desc">Price ↓</option>
         </select>
-        <button id="search-btn">Search</button>
-      </div>
-
-      <div class="hero-actions">
-        <button id="upload-prescription" class="btn outline">Upload Prescription</button>
-        <a id="whatsapp-header" class="btn primary" href="https://wa.me/919413604420" target="_blank">Order on WhatsApp</a>
-      </div>
+        <button id="view-cart" title="Cart">Cart (<span id="cart-count">0</span>)</button>
+      </nav>
     </div>
   </header>
 
-  <main class="container main-content">
-    <section class="products">
-      <h2>Available Medicines</h2>
-      <div id="product-list" class="product-grid"></div>
+  <main class="wrap main">
+    <aside class="left-col">
+      <h3>Categories</h3>
+      <ul class="cats">
+        <li data-cat="all" class="cat active">All</li>
+        <li data-cat="generic" class="cat">Generic</li>
+        <li data-cat="ethical" class="cat">Ethical</li>
+        <li data-cat="daily" class="cat">Daily Use</li>
+      </ul>
+      <h3>Quick Filters</h3>
+      <button id="show-offers">Show Offers</button>
+    </aside>
+
+    <section class="products" id="product-list" aria-live="polite">
+      <!-- products injected here -->
     </section>
   </main>
 
-  <div class="floating-order">
-    <a href="https://wa.me/919413604420" target="_blank" class="float-wa">WhatsApp</a>
-    <button id="floating-order-btn" class="float-order-btn">Order</button>
-  </div>
-
-  <div id="modal" class="modal hidden">
+  <!-- CART / CHECKOUT MODAL -->
+  <div id="modal" class="modal hidden" role="dialog" aria-hidden="true">
     <div class="modal-card">
-      <button id="modal-close" class="modal-close">✕</button>
+      <button id="close-modal" class="modal-close">✕</button>
       <div id="modal-body"></div>
     </div>
   </div>
 
-  <footer class="site-footer">
-    <div class="container">
-      <p>© <span id="year"></span> Health Hub Pharmacy — Contact: 9413604420</p>
-    </div>
+  <footer class="wrap footer">
+    <div>© <span id="year"></span> Health Hub Pharmacy • Call/WhatsApp: <span id="shop-phone">9413604420</span></div>
   </footer>
 
   <script src="script.js"></script>
