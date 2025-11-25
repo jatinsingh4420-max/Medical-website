@@ -1,4 +1,8 @@
-// ====== CONFIG - edit products or phone here ======
+const orderFormBtn = document.getElementById("order-form");
+
+orderFormBtn.addEventListener("click", ()=>{
+  openOrderForm(currentProduct.name);
+});// ====== CONFIG - edit products or phone here ======
 const MY_WHATSAPP_NUMBER = "919413604420"; // use full number with country code (91...)
 const PRODUCTS = [
   { id: "p1", name: "Paracetamol 500mg (10)", price: 30, desc: "Fever reducer", offer: 20 },
@@ -86,6 +90,7 @@ orderSaveBtn.addEventListener("click", ()=>{
     product: currentProduct.name,
     qty, customer, addr, ts: new Date().toISOString()
   };
+
   const list = JSON.parse(localStorage.getItem("hh_orders") || "[]");
   list.push(order);
   localStorage.setItem("hh_orders", JSON.stringify(list));
