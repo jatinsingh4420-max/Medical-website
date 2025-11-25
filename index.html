@@ -1,67 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Health Hub Pharmacy</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero">
+
+  <!-- TOP BAR (small) -->
+  <div class="topbar">
     <div class="container">
-      <h1>Health Hub Pharmacy</h1>
-      <p class="subtitle">Authentic Medicines • Home Delivery</p>
-      <a class="cta" id="whatsapp-cta" href="#" target="_blank">Order on WhatsApp</a>
+      <div class="top-left">Quality medicines at real price</div>
+      <div class="top-right">Call: 9413604420</div>
+    </div>
+  </div>
+
+  <!-- HEADER / HERO -->
+  <header class="hero">
+    <div class="container hero-inner">
+      <div class="brand">
+        <h1>Health Hub Pharmacy</h1>
+        <p class="subtitle">Authentic Medicines • Home Delivery Available</p>
+      </div>
+
+      <div class="search-block">
+        <input id="search-input" type="search" placeholder="Search your medicine..." />
+        <button id="search-btn">Search</button>
+      </div>
+
+      <div class="hero-actions">
+        <button id="upload-prescription" class="btn outline">Upload Prescription</button>
+        <a id="whatsapp-header" class="btn primary" href="https://wa.me/919413604420" target="_blank">Order on WhatsApp</a>
+      </div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="contact">
-      <h2>Contact</h2>
-      <p><strong>Phone:</strong> 9413604420</p>
-      <p><strong>WhatsApp:</strong> <a id="wa-link" href="#" target="_blank">Chat on WhatsApp</a></p>
+  <!-- MAIN -->
+  <main class="container main-content">
+    <section class="categories">
+      <h2>Shop By Health Categories</h2>
+      <div class="cats">
+        <div class="cat">Pain Relief</div>
+        <div class="cat">Diabetes</div>
+        <div class="cat">Digestion</div>
+        <div class="cat">Vitamins</div>
+      </div>
     </section>
 
     <section class="products">
       <h2>Available Medicines</h2>
-      <div id="product-list" class="product-list"></div>
+      <div id="product-list" class="product-grid"></div>
     </section>
   </main>
 
-  <!-- ORDER MODAL -->
-  <div id="order-modal" class="modal hidden" aria-hidden="true">
+  <!-- Floating order bar (right) -->
+  <div class="floating-order">
+    <a href="https://wa.me/919413604420" target="_blank" class="float-wa">WhatsApp</a>
+    <button id="floating-order-btn" class="float-order-btn">Order</button>
+  </div>
+
+  <!-- Simple modal for upload or order -->
+  <div id="modal" class="modal hidden">
     <div class="modal-card">
-      <button class="modal-close" id="modal-close">✕</button>
-      <h3 id="modal-product-name">Order</h3>
-
-      <label>Quantity
-        <input id="order-qty" type="number" value="1" min="1" />
-      </label>
-
-      <label>Your Name
-        <input id="order-name" type="text" placeholder="Your name" />
-      </label>
-
-      <label>Address
-        <textarea id="order-address" placeholder="Delivery address"></textarea>
-      </label>
-
-      <label>Phone
-        <input id="order-phone" type="text" placeholder="Phone number" />
-      </label>
-
-      <div class="modal-actions">
-        <button id="order-whatsapp" class="btn-primary">Place Order on WhatsApp</button>
-        <button id="order-form" class="btn-secondary">Place Order on Google Form</button>
-        <button id="order-save" class="btn-secondary">Save Locally</button>
-      </div>
+      <button id="modal-close" class="modal-close">✕</button>
+      <div id="modal-body"></div>
     </div>
   </div>
 
-  <footer class="footer">
+  <footer class="site-footer">
     <div class="container">
-      <p>© <span id="year"></span> Health Hub Pharmacy</p>
-      <p class="small">Made with ❤️ — Orders via WhatsApp & Google Form</p>
+      <p>© <span id="year"></span> Health Hub Pharmacy — Contact: 9413604420</p>
     </div>
   </footer>
 
