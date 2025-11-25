@@ -1,63 +1,63 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Health Hub Pharmacy</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Hub Pharmacy</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-  <header class="top">
-    <div class="wrap">
-      <div class="brand">Health Hub Pharmacy</div>
-      <nav class="nav-right">
-        <input id="search" placeholder="Search medicines, e.g. Paracetamol" />
-        <select id="filter-cat">
-          <option value="all">All categories</option>
-          <option value="generic">Generic</option>
-          <option value="ethical">Ethical</option>
-          <option value="daily">Daily Use</option>
-        </select>
-        <select id="sort-select">
-          <option value="relevance">Sort: Relevance</option>
-          <option value="price-asc">Price ↑</option>
-          <option value="price-desc">Price ↓</option>
-        </select>
-        <button id="view-cart" title="Cart">Cart (<span id="cart-count">0</span>)</button>
-      </nav>
-    </div>
-  </header>
 
-  <main class="wrap main">
-    <aside class="left-col">
-      <h3>Categories</h3>
-      <ul class="cats">
-        <li data-cat="all" class="cat active">All</li>
-        <li data-cat="generic" class="cat">Generic</li>
-        <li data-cat="ethical" class="cat">Ethical</li>
-        <li data-cat="daily" class="cat">Daily Use</li>
-      </ul>
-      <h3>Quick Filters</h3>
-      <button id="show-offers">Show Offers</button>
-    </aside>
+<header class="header">
+    <h1>Health Hub Pharmacy</h1>
+    <p>Authentic Medicines • Home Delivery Available</p>
 
-    <section class="products" id="product-list" aria-live="polite">
-      <!-- products injected here -->
-    </section>
-  </main>
+    <input id="searchBox" type="text" placeholder="Search medicine..." onkeyup="searchMedicine()">
+</header>
 
-  <!-- CART / CHECKOUT MODAL -->
-  <div id="modal" class="modal hidden" role="dialog" aria-hidden="true">
-    <div class="modal-card">
-      <button id="close-modal" class="modal-close">✕</button>
-      <div id="modal-body"></div>
-    </div>
-  </div>
+<section>
+    <h2>Available Medicines</h2>
+    <div id="product-list"></div>
+</section>
 
-  <footer class="wrap footer">
-    <div>© <span id="year"></span> Health Hub Pharmacy • Call/WhatsApp: <span id="shop-phone">9413604420</span></div>
-  </footer>
+<a href="https://wa.me/9413604420" class="float-whatsapp">Order on WhatsApp</a>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
+
+<script>
+function renderProducts(list) {
+    const container = document.getElementById("product-list");
+    container.innerHTML = "";
+
+    list.forEach(p => {
+        container.innerHTML += `
+            <div class="product">
+                <img src="${p.image}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <p>${p.description}</p>
+                <p class="price">₹${p.price}</p>
+                <button onclick="orderNow('${p.name}', ${p.price})">Order Now</button>
+            </div>
+        `;
+    });
+}
+
+function orderNow(name, price) {
+    window.location.href = 
+    `https://wa.me/9413604420?text=I want to order: ${name} - ₹${price}`;
+}
+
+function searchMedicine() {
+    const q = document.getElementById("searchBox").value.toLowerCase();
+    const filtered = products.filter(p => 
+        p.name.toLowerCase().includes(q)
+    );
+    renderProducts(filtered);
+}
+
+renderProducts(products);
+</script>
+
 </body>
 </html>
