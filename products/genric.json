@@ -1,0 +1,107 @@
+[
+  {
+    "id": "g001",
+    "name": "Paracetamol 500mg",
+    "price": 30,
+    "description": "Fever reducer and pain relief.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g002",
+    "name": "Ibuprofen 400mg",
+    "price": 50,
+    "description": "Used for pain, fever and inflammation.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g003",
+    "name": "Amoxicillin 500mg",
+    "price": 95,
+    "description": "Broad-spectrum antibiotic.",
+    "image": "https://images.unsplash.com/photo-1584395630824-8d79e3fddc43"
+  },
+  {
+    "id": "g004",
+    "name": "Azithromycin 250mg",
+    "price": 120,
+    "description": "Antibacterial used for infections.",
+    "image": "https://images.unsplash.com/photo-1584438784894-089d6f8b36cb"
+  },
+  {
+    "id": "g005",
+    "name": "Doxycycline 100mg",
+    "price": 90,
+    "description": "Antibiotic used for bacterial infections.",
+    "image": "https://images.unsplash.com/photo-1584438784894-089d6f8b36cb"
+  },
+  {
+    "id": "g006",
+    "name": "Cetirizine 10mg",
+    "price": 25,
+    "description": "Allergy relief antihistamine.",
+    "image": "https://images.unsplash.com/photo-1561219469-59540f33a5ab"
+  },
+  {
+    "id": "g007",
+    "name": "Pantoprazole 40mg",
+    "price": 60,
+    "description": "Reduces acidity and GERD symptoms.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g008",
+    "name": "Omeprazole 20mg",
+    "price": 55,
+    "description": "Acidity and ulcer treatment.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g009",
+    "name": "Metformin 500mg",
+    "price": 70,
+    "description": "First-line diabetes control.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g010",
+    "name": "Glimipiride 1mg",
+    "price": 85,
+    "description": "Diabetes type-2 control.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g011",
+    "name": "Atorvastatin 10mg",
+    "price": 110,
+    "description": "Cholesterol control.",
+    "image": "https://images.unsplash.com/photo-1580894908361-dc2c830a87c1"
+  },
+  {
+    "id": "g012",
+    "name": "Losartan 50mg",
+    "price": 90,
+    "description": "Blood pressure control.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g013",
+    "name": "Amlodipine 5mg",
+    "price": 70,
+    "description": "BP control medicine.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "g014",
+    "name": "Montelukast 10mg",
+    "price": 95,
+    "description": "Used in asthma and allergies.",
+    "image": "https://images.unsplash.com/photo-1561219469-59540f33a5ab"
+  },
+  {
+    "id": "g015",
+    "name": "Prednisolone 5mg",
+    "price": 60,
+    "description": "Steroid for inflammation.",
+    "image": "https://images.unsplash.com/photo-1584438784894-089d6f8b36cb"
+  }
+]
