@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Hub Pharmacy - Home</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+<header class="header">
+    <h1>Health Hub Pharmacy</h1>
+    <input type="text" id="search" placeholder="Search medicine..." onkeyup="searchHome()">
+</header>
+
+<section class="banner">
+    <img src="images/banner/main-banner.jpg" alt="Banner">
+</section>
+
+<section class="categories">
+    <h2>Shop by Category</h2>
+
+    <div class="category-grid">
+        <a href="category.html?cat=generic" class="cat-box">Generic Medicine</a>
+        <a href="category.html?cat=ethical" class="cat-box">Ethical Brands</a>
+        <a href="category.html?cat=otc" class="cat-box">OTC / Daily Use</a>
+        <a href="category.html?cat=ayurvedic" class="cat-box">Ayurvedic</a>
+    </div>
+</section>
+
+<section>
+    <h2>Featured Medicines</h2>
+    <div id="home-products" class="product-grid"></div>
+</section>
+
+<a href="cart.html" class="cart-btn">🛒 Cart</a>
+
+<script src="js/app.js"></script>
+
+<script>
+loadFeatured();
+</script>
+
+</body>
+</html>
