@@ -1,63 +1,37 @@
 :root{
-  --primary:#1976D2;
-  --accent:#0b75c9;
-  --muted:#f6f7fb;
-  --card:#fff;
-  --text:#111;
+  --primary:#1976D2;--accent:#0b75c9;--muted:#f6f7fb;--card:#fff;--text:#111;
 }
-
-*{box-sizing:border-box}
-body{font-family:system-ui,Arial;margin:0;color:var(--text);background:#f5f7fb}
+*{box-sizing:border-box}body{font-family:system-ui,Arial;margin:0;color:var(--text);background:#f5f7fb}
 .container{max-width:1000px;margin:0 auto;padding:0 16px}
-
-/* topbar */
-.topbar{background:#0b5ea1;color:#fff;font-size:13px}
-.topbar .container{display:flex;justify-content:space-between;padding:6px 16px}
-
-/* hero */
-.hero{background:var(--primary);color:#fff;padding:18px 0}
+.topbar{background:#0b5ea1;color:#fff;font-size:13px;padding:6px 0;text-align:center}
+.hero{background:var(--primary);color:#fff;padding:14px 0}
 .hero-inner{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
 .brand h1{margin:0;font-size:28px}
 .subtitle{margin:4px 0 0;font-size:15px;opacity:0.95}
-
 .search-block{flex:1;display:flex;gap:8px}
-.search-block input{flex:1;padding:12px;border-radius:6px;border:none}
-.search-block button{padding:12px 16px;border:none;border-radius:6px;background:#fff;color:var(--primary);font-weight:600}
-
+.search-block input{flex:1;padding:10px;border-radius:6px;border:none}
+.search-block select{padding:10px;border-radius:6px;border:none}
+.search-block button{padding:10px 14px;border:none;border-radius:6px;background:#fff;color:var(--primary);font-weight:600}
 .hero-actions{display:flex;gap:8px;align-items:center}
-.btn{padding:10px 14px;border-radius:6px;text-decoration:none;cursor:pointer}
+.btn{padding:8px 12px;border-radius:6px;text-decoration:none;cursor:pointer}
 .btn.primary{background:#fff;color:var(--primary);font-weight:700}
 .btn.outline{background:transparent;border:2px solid rgba(255,255,255,0.3);color:#fff}
-
-/* categories */
-.categories{padding:18px 0}
-.cats{display:flex;gap:8px;flex-wrap:wrap}
-.cat{background:#fff;padding:12px;border-radius:8px;box-shadow:0 4px 12px rgba(30,40,50,0.06)}
-
-/* products */
-.products{padding:10px 0 60px}
+.products{padding:16px 0}
 .product-grid{display:grid;grid-template-columns:1fr;gap:12px}
-.card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(20,30,40,0.06)}
+.card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(20,30,40,0.06)}
 .card h3{margin:0 0 6px}
 .card .price{color:green;font-weight:700;margin-right:8px}
 .card .offer{color:#d32f2f;font-weight:700}
-
-/* floating order */
+.card .actions{margin-top:10px;display:flex;gap:8px}
 .floating-order{position:fixed;right:16px;bottom:20px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;z-index:999}
 .float-wa{background:#25D366;padding:10px 14px;border-radius:30px;color:#fff;text-decoration:none;display:block}
 .float-order-btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none}
-
-/* modal */
 .modal.hidden{display:none}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
 .modal-card{background:#fff;padding:18px;border-radius:10px;width:92%;max-width:480px;position:relative}
 .modal-close{position:absolute;right:10px;top:10px;border:none;background:transparent;font-size:18px}
-
-/* footer */
 .site-footer{background:#fff;padding:18px 0;border-top:1px solid #eee;margin-top:30px;text-align:center;color:#666;font-size:14px}
-
 @media(min-width:720px){
   .product-grid{grid-template-columns:repeat(2,1fr)}
-  .hero-inner{gap:24px}
   .brand h1{font-size:36px}
 }
