@@ -1,0 +1,107 @@
+[
+  {
+    "id": "a001",
+    "name": "Dabur Chyawanprash 500g",
+    "price": 190,
+    "description": "Boosts immunity and energy naturally.",
+    "image": "https://images.unsplash.com/photo-1514996937319-344454492b37"
+  },
+  {
+    "id": "a002",
+    "name": "Himalaya Liv.52 Tablets",
+    "price": 130,
+    "description": "Supports liver function and digestion.",
+    "image": "https://images.unsplash.com/photo-1595436244005-18aaedc3a4b3"
+  },
+  {
+    "id": "a003",
+    "name": "Patanjali Giloy Ghanvati",
+    "price": 95,
+    "description": "Natural fever reducer and immunity booster.",
+    "image": "https://images.unsplash.com/photo-1595436244005-18aaedc3a4b3"
+  },
+  {
+    "id": "a004",
+    "name": "Baidyanath Ashwagandha",
+    "price": 145,
+    "description": "Reduces stress, improves strength & stamina.",
+    "image": "https://images.unsplash.com/photo-1502741126161-b048400d1361"
+  },
+  {
+    "id": "a005",
+    "name": "Dabur Honitus Syrup",
+    "price": 90,
+    "description": "Ayurvedic cough and cold syrup.",
+    "image": "https://images.unsplash.com/photo-1612731486621-da75a9887d44"
+  },
+  {
+    "id": "a006",
+    "name": "Zandu Balm",
+    "price": 95,
+    "description": "Ayurvedic pain relief balm.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "a007",
+    "name": "Patanjali Aloe Vera Juice",
+    "price": 180,
+    "description": "Good for digestion and immunity.",
+    "image": "https://images.unsplash.com/photo-1502741126161-b048400d1361"
+  },
+  {
+    "id": "a008",
+    "name": "Himalaya Triphala",
+    "price": 120,
+    "description": "Improves digestion and detoxifies the body.",
+    "image": "https://images.unsplash.com/photo-1502741126161-b048400d1361"
+  },
+  {
+    "id": "a009",
+    "name": "Baidyanath Shankhpushpi",
+    "price": 95,
+    "description": "Boosts memory & brain function.",
+    "image": "https://images.unsplash.com/photo-1502741126161-b048400d1361"
+  },
+  {
+    "id": "a010",
+    "name": "Patanjali Divya Medha Vati",
+    "price": 80,
+    "description": "Useful for stress, anxiety, and focus.",
+    "image": "https://images.unsplash.com/photo-1502741126161-b048400d1361"
+  },
+  {
+    "id": "a011",
+    "name": "Dabur Pudin Hara",
+    "price": 55,
+    "description": "Natural digestion and gas relief drops.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "a012",
+    "name": "Kerala Ayurveda Kumkumadi Oil",
+    "price": 220,
+    "description": "Ayurvedic facial oil for glowing skin.",
+    "image": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9"
+  },
+  {
+    "id": "a013",
+    "name": "Zandu Pancharishta",
+    "price": 130,
+    "description": "Ayurvedic digestive tonic.",
+    "image": "https://images.unsplash.com/photo-1612731486621-da75a9887d44"
+  },
+  {
+    "id": "a014",
+    "name": "Ayush Kwath Powder",
+    "price": 85,
+    "description": "Boosts respiratory immunity.",
+    "image": "https://images.unsplash.com/photo-1514996937319-344454492b37"
+  },
+  {
+    "id": "a015",
+    "name": "Patanjali Badam Rogan",
+    "price": 210,
+    "description": "Pure almond oil for brain & skin.",
+    "image": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9"
+  }
+]
