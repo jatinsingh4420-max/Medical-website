@@ -7,25 +7,22 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="topbar"><div class="container">Health Hub Pharmacy • Call: 9413604420</div></div>
 
-  <!-- TOP BAR (small) -->
-  <div class="topbar">
-    <div class="container">
-      <div class="top-left">Quality medicines at real price</div>
-      <div class="top-right">Call: 9413604420</div>
-    </div>
-  </div>
-
-  <!-- HEADER / HERO -->
   <header class="hero">
     <div class="container hero-inner">
       <div class="brand">
         <h1>Health Hub Pharmacy</h1>
-        <p class="subtitle">Authentic Medicines • Home Delivery Available</p>
+        <p class="subtitle">Authentic Medicines • Home Delivery</p>
       </div>
 
       <div class="search-block">
-        <input id="search-input" type="search" placeholder="Search your medicine..." />
+        <input id="search-input" type="search" placeholder="Search medicine or price..." />
+        <select id="sort-select">
+          <option value="relevance">Sort: Relevance</option>
+          <option value="price-asc">Price ↑</option>
+          <option value="price-desc">Price ↓</option>
+        </select>
         <button id="search-btn">Search</button>
       </div>
 
@@ -36,31 +33,18 @@
     </div>
   </header>
 
-  <!-- MAIN -->
   <main class="container main-content">
-    <section class="categories">
-      <h2>Shop By Health Categories</h2>
-      <div class="cats">
-        <div class="cat">Pain Relief</div>
-        <div class="cat">Diabetes</div>
-        <div class="cat">Digestion</div>
-        <div class="cat">Vitamins</div>
-      </div>
-    </section>
-
     <section class="products">
       <h2>Available Medicines</h2>
       <div id="product-list" class="product-grid"></div>
     </section>
   </main>
 
-  <!-- Floating order bar (right) -->
   <div class="floating-order">
     <a href="https://wa.me/919413604420" target="_blank" class="float-wa">WhatsApp</a>
     <button id="floating-order-btn" class="float-order-btn">Order</button>
   </div>
 
-  <!-- Simple modal for upload or order -->
   <div id="modal" class="modal hidden">
     <div class="modal-card">
       <button id="modal-close" class="modal-close">✕</button>
