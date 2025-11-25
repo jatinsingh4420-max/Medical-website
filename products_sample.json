@@ -1,0 +1,7 @@
+[
+  {"name":"Paracetamol 500mg","price":30,"description":"Fever reducer","offer":20,"rx_required":false,"category":"generic"},
+  {"name":"Ibuprofen 200mg","price":40,"description":"Pain & inflammation","offer":10,"rx_required":false,"category":"generic"},
+  {"name":"Amoxicillin 500mg","price":90,"description":"Antibiotic","offer":0,"rx_required":true,"category":"generic"},
+  {"name":"Azithromycin 250mg","price":120,"description":"Antibiotic (single dose)","offer":10,"rx_required":true,"category":"generic"},
+  {"name":"Evecare Paracetamol 500mg","price":35,"description":"Brand - Paracetamol","offer":15,"rx_required":false,"category":"ethical"}
+]
