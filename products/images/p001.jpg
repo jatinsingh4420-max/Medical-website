@@ -1,0 +1,23 @@
+[
+  {
+    "id":"p001",
+    "name":"Paracetamol 500mg (10)",
+    "price":30,
+    "description":"Fever reducer",
+    "category":"generic",
+    "image":"products/images/p001.jpg",
+    "offer":"20% OFF",
+    "rx_required":false
+  },
+  {
+    "id":"p002",
+    "name":"Ibuprofen 400mg",
+    "price":50,
+    "description":"Pain & inflammation",
+    "category":"generic",
+    "image":"products/images/p002.jpg",
+    "offer":"",
+    "rx_required":false
+  }
+  /* ... aur products ... */
+]
