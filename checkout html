@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Health Hub Pharmacy</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+<header class="header">
+    <a href="cart.html" class="back-btn">← Back</a>
+    <h1>Checkout</h1>
+</header>
+
+<section class="checkout-page">
+
+    <h2>Delivery Details</h2>
+
+    <label>Full Name</label>
+    <input id="cName" type="text" placeholder="Enter your full name">
+
+    <label>Phone Number</label>
+    <input id="cPhone" type="text" placeholder="Enter phone number">
+
+    <label>Address</label>
+    <textarea id="cAddress" placeholder="House No, Street, Area, City"></textarea>
+
+    <label>Notes (Optional)</label>
+    <textarea id="cNotes" placeholder="Any instructions"></textarea>
+
+    <button onclick="placeOrder()" class="placeorder-btn">Place Order</button>
+
+</section>
+
+<script src="js/app.js"></script>
+
+<script>
+function placeOrder(){
+    let name = document.getElementById("cName").value;
+    let phone = document.getElementById("cPhone").value;
+    let address = document.getElementById("cAddress").value;
+    let notes = document.getElementById("cNotes").value;
+
+    if(name === "" || phone === "" || address === ""){
+        alert("Please fill all required fields!");
+        return;
+    }
+
+    let cart = JSON.parse(localStorage.getItem("CART") || "[]");
+
+    if(cart.length === 0){
+        alert("Your cart is empty!");
+        return;
+    }
+
+    let msg = `*New Order from Website*\n\n` +
+              `*Name:* ${name}\n` +
+              `*Phone:* ${phone}\n` +
+              `*Address:* ${address}\n\n` +
+              `*Order Details:*\n`;
+
+    cart.forEach(item => {
+        msg += `${item.name} x ${item.qty} = ₹${item.price * item.qty}\n`;
+    });
+
+    msg += `\n*Notes:* ${notes}\n`;
+    msg += `\nThank you!`;
+
+    window.location.href = 
+        `https://wa.me/919413604420?text=${encodeURIComponent(msg)}`;
+}
+</script>
+
+</body>
+</html>
