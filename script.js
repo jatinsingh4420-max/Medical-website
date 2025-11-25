@@ -1,237 +1,83 @@
-// ========== CONFIG - EDIT THESE ==========
-const SHOP_WHATSAPP = "919413604420"; // your number (countrycode + number, no +)
-const FORM_BASE = ""; // optional Google Form base prefill URL (leave empty to disable form submit)
-// map if you want programmatic entries: ENTRY_PRODUCT, ENTRY_QTY... (leave blank if unused)
-const ENTRY_PRODUCT = ""; const ENTRY_QTY = ""; const ENTRY_NAME = ""; const ENTRY_ADDRESS = ""; const ENTRY_PHONE = "";
-// =========================================
-
-const YEAR_EL = document.getElementById("year");
-if (YEAR_EL) YEAR_EL.innerText = new Date().getFullYear();
-document.getElementById("shop-phone").innerText = SHOP_WHATSAPP.replace(/^91/,"");
-
-// state
-let PRODUCTS = [];
-let CART = {}; // {productId: qty}
-
-// helpers
-const $ = (sel)=>document.querySelector(sel);
-const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
-
-function fetchProducts(){
-  fetch('products.json').then(r=>r.json()).then(data=>{
-    PRODUCTS = data;
-    renderProducts(PRODUCTS);
-    updateCartCount();
-  }).catch(err=>{
-    console.error(err);
-    document.getElementById('product-list').innerHTML = "<p style='color:#b00'>Error loading products.json</p>";
-  });
-}
-
-function renderProducts(list){
-  const container = document.getElementById('product-list');
-  container.innerHTML = '';
-  list.forEach(p=>{
-    const el = document.createElement('article');
-    el.className = 'card';
-    el.innerHTML = `
-      <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Medicine'"/>
-      <h4>${p.name}</h4>
-      <p>${p.description}</p>
-      <div class="row">
-        <div>
-          <span class="price">₹${p.price}</span>
-          ${p.offer? `<span class="offer">${p.offer}% OFF</span>` : ''}
-        </div>
-        <div class="cat-tag">${p.category}</div>
-      </div>
-      <div class="actions">
-        <button class="btn btn-add" data-id="${p.id}">Add to Cart</button>
-        <button class="btn btn-ws" data-id="${p.id}">Buy (WhatsApp)</button>
-        <button class="btn btn-form" data-id="${p.id}">Order (Form)</button>
-      </div>
-    `;
-    container.appendChild(el);
-  });
-
-  // attach listeners
-  $$('.btn-add').forEach(b=>b.onclick = e=>{ addToCart(e.target.dataset.id, 1); });
-  $$('.btn-ws').forEach(b=>b.onclick = e=>{ buyViaWhatsApp(e.target.dataset.id); });
-  $$('.btn-form').forEach(b=>b.onclick = e=>{ orderViaForm(e.target.dataset.id); });
-}
-
-// CART functions
-function addToCart(pid, qty=1){
-  CART[pid] = (CART[pid] || 0) + qty;
-  saveCart();
-  updateCartCount();
-  toast("Added to cart");
-}
-function removeFromCart(pid){ delete CART[pid]; saveCart(); renderCart(); updateCartCount(); }
-function changeQty(pid, q){ if(q<=0) removeFromCart(pid); else { CART[pid]=q; saveCart(); renderCart(); updateCartCount(); } }
-function saveCart(){ localStorage.setItem('hh_cart', JSON.stringify(CART)); }
-function loadCart(){ try{ CART = JSON.parse(localStorage.getItem('hh_cart')||'{}'); }catch(e){ CART={}; } }
-function updateCartCount(){ const c = Object.values(CART).reduce((s,n)=>s+Number(n),0); document.getElementById('cart-count').innerText = c; }
-
-// Modal & cart UI
-const modal = document.getElementById('modal');
-const modalBody = document.getElementById('modal-body');
-document.getElementById('close-modal').onclick = ()=>closeModal();
-
-function openModal(){ modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false'); }
-function closeModal(){ modal.classList.add('hidden'); modal.setAttribute('aria-hidden','true'); }
-
-// render cart
-function renderCart(){
-  loadCart();
-  const items = Object.keys(CART).map(id=>{
-    const prod = PRODUCTS.find(p=>p.id===id);
-    return { ...prod, qty: CART[id] };
-  });
-  let html = `<h2>Your Cart</h2>`;
-  if(!items.length){ html += '<p>Cart is empty</p>'; html += `<div style="text-align:right"><button id="close-cart" class="btn">Close</button></div>`; modalBody.innerHTML = html; openModal(); document.getElementById('close-cart').onclick=closeModal; return; }
-
-  html += `<div class="cart-list">`;
-  items.forEach(it=>{
-    html += `<div class="cart-item">
-      <img src="${it.image}" onerror="this.src='https://via.placeholder.com/80x80?text=Img'"/>
-      <div style="flex:1">
-        <div style="font-weight:700">${it.name}</div>
-        <div class="qty">
-          <button class="btn" data-act="dec" data-id="${it.id}">-</button>
-          <span style="min-width:28px;text-align:center">${it.qty}</span>
-          <button class="btn" data-act="inc" data-id="${it.id}">+</button>
-        </div>
-      </div>
-      <div style="text-align:right">
-        <div>₹${it.price * it.qty}</div>
-        <button class="btn" data-act="remove" data-id="${it.id}">Remove</button>
-      </div>
-    </div>`;
-  });
-  html += `</div>`;
-
-  // Total & checkout
-  const total = items.reduce((s,it)=>s+it.price*it.qty,0);
-  html += `<div style="text-align:right;font-weight:800">Total: ₹${total}</div>`;
-  html += `<div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-    <button id="checkout-form" class="btn btn-form">Checkout (Form)</button>
-    <button id="checkout-ws" class="btn btn-ws">Checkout (WhatsApp)</button>
-    <button id="close-cart" class="btn">Close</button>
-  </div>`;
-
-  modalBody.innerHTML = html;
-  openModal();
-
-  // events
-  $$('.cart-item button[data-act]').forEach(b=>{
-    b.onclick = (e)=>{
-      const id = e.target.dataset.id; const act = e.target.dataset.act;
-      if(act==='inc') changeQty(id, CART[id]+1);
-      if(act==='dec') changeQty(id, CART[id]-1);
-      if(act==='remove') removeFromCart(id);
-      renderCart();
-    };
-  });
-  document.getElementById('close-cart').onclick = closeModal;
-  document.getElementById('checkout-ws').onclick = ()=>checkoutViaWhatsApp(items);
-  document.getElementById('checkout-form').onclick = ()=>checkoutViaForm(items);
-}
-
-// Quick toast
-function toast(msg){ const el = document.createElement('div'); el.style = 'position:fixed;right:18px;bottom:18px;background:#222;color:#fff;padding:10px;border-radius:8px;z-index:9999'; el.innerText = msg; document.body.appendChild(el); setTimeout(()=>el.remove(),1500); }
-
-// Buy single item via whatsapp
-function buyViaWhatsApp(pid){
-  const p = PRODUCTS.find(x=>x.id===pid);
-  const msg = `Hello, I'd like to buy:\n${p.name}\nQty: 1\nPrice: ₹${p.price}\nPlease confirm availability and delivery.\n- Health Hub Pharmacy`;
-  window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank');
-}
-
-// Order single via form (prefill)
-function orderViaForm(pid){
-  const p = PRODUCTS.find(x=>x.id===pid);
-  if(!FORM_BASE){ // fallback to open modal quick-order
-    openQuickOrderModal(p);
-    return;
-  }
-  // if FORM_BASE & ENTRY_* configured, open prefilled URL
-  const params = new URLSearchParams();
-  if(ENTRY_PRODUCT) params.set(ENTRY_PRODUCT, p.name);
-  if(ENTRY_QTY) params.set(ENTRY_QTY, 1);
-  // Other entries left empty for customer to fill
-  window.open(FORM_BASE + '&' + params.toString(),'_blank');
-}
-
-// Checkout via WhatsApp (cart)
-function checkoutViaWhatsApp(items){
-  let text = `New Order from Website:%0A`;
-  items.forEach(it=> text += `${it.name} x ${it.qty} = ₹${it.price * it.qty}%0A`);
-  const total = items.reduce((s,it)=>s+it.price*it.qty,0);
-  text += `Total: ₹${total}%0APlease confirm availability & delivery.`;
-  window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${text}`,'_blank');
-  closeModal();
-}
-
-// Checkout via Google Form (cart)
-function checkoutViaForm(items){
-  if(!FORM_BASE){ openQuickOrderModal(null, items); return; }
-  // Build a prefill for form if ENTRY_* set. We'll append product details into a text field (if available).
-  let productList = items.map(it=> `${it.name} x ${it.qty}`).join('; ');
-  const params = new URLSearchParams();
-  if(ENTRY_PRODUCT) params.set(ENTRY_PRODUCT, productList);
-  if(ENTRY_QTY) params.set(ENTRY_QTY, items.reduce((s,it)=>s+it.qty,0));
-  window.open(FORM_BASE + '&' + params.toString(), '_blank');
-  closeModal();
-}
-
-// Quick order modal (single or cart) to collect customer name/address when FORM not configured
-function openQuickOrderModal(product=null, items=null){
-  let html = `<h3>Place Order</h3>`;
-  if(product) html += `<div style="font-weight:700">${product.name} - ₹${product.price}</div><br>`;
-  else if(items) html += `<div style="font-weight:700">Cart Items: ${items.length}</div><br>`;
-  html += `<label>Your name <input id="co-name" /></label><br><label>Phone <input id="co-phone" /></label><br><label>Address <textarea id="co-address"></textarea></label><br>`;
-  html += `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
-    <button id="co-ws" class="btn btn-ws">Send via WhatsApp</button>
-    <button id="co-close" class="btn">Cancel</button>
-  </div>`;
-  modalBody.innerHTML = html; openModal();
-  document.getElementById('co-close').onclick = closeModal;
-  document.getElementById('co-ws').onclick = ()=>{
-    const name = document.getElementById('co-name').value || 'Customer';
-    const phone = document.getElementById('co-phone').value || '';
-    const addr = document.getElementById('co-address').value || '';
-    let text = `Order from ${name}%0APhone: ${phone}%0AAddress: ${addr}%0A`;
-    if(product) text += `${product.name} x1 = ₹${product.price}%0A`;
-    else if(items) items.forEach(it=> text += `${it.name} x${it.qty} = ₹${it.price*it.qty}%0A`);
-    window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(text)}`,'_blank');
-    closeModal();
-  };
-}
-
-// SEARCH / FILTER / SORT
-function applyControls(){
-  const q = (document.getElementById('search').value || '').toLowerCase().trim();
-  const cat = document.getElementById('filter-cat').value;
-  const sort = document.getElementById('sort-select').value;
-  let filtered = PRODUCTS.filter(p=>{
-    if(cat !== 'all' && p.category !== cat) return false;
-    if(!q) return true;
-    return p.name.toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q);
-  });
-  if(sort === 'price-asc') filtered.sort((a,b)=>a.price-b.price);
-  if(sort === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
-  renderProducts(filtered);
-}
-
-// attach controls
-document.getElementById('search').addEventListener('input', applyControls);
-document.getElementById('filter-cat').addEventListener('change', applyControls);
-document.getElementById('sort-select').addEventListener('change', applyControls);
-$$('.cat').forEach(el=> el.onclick = (e)=>{ $$('.cat').forEach(x=>x.classList.remove('active')); e.target.classList.add('active'); document.getElementById('filter-cat').value = e.target.dataset.cat; applyControls(); });
-document.getElementById('view-cart').onclick = renderCart;
-document.getElementById('show-offers').onclick = ()=> renderProducts(PRODUCTS.filter(p=>p.offer && p.offer>0));
-
-// load cart & products
-loadCart();
-fetchProducts();
+[
+{"id":"p001","name":"Paracetamol 500mg","price":30,"description":"Fever reducer","offer":10,"rx_required":false,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=1"},
+{"id":"p002","name":"Ibuprofen 400mg","price":50,"description":"Pain & inflammation","offer":5,"rx_required":false,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=2"},
+{"id":"p003","name":"Amoxicillin 500mg","price":95,"description":"Antibiotic","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=3"},
+{"id":"p004","name":"Azithromycin 250mg","price":120,"description":"Antibacterial","offer":15,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=4"},
+{"id":"p005","name":"Pantoprazole 40mg","price":60,"description":"Acidity control","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=5"},
+{"id":"p006","name":"Metformin 500mg","price":70,"description":"Diabetes medicine","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=6"},
+{"id":"p007","name":"Cetirizine 10mg","price":25,"description":"Allergy relief","offer":0,"rx_required":false,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=7"},
+{"id":"p008","name":"Dolo 650 (Paracetamol)","price":35,"description":"Fever & pain","offer":10,"rx_required":false,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=8"},
+{"id":"p009","name":"Cough Syrup 100ml","price":95,"description":"Cough relief","offer":10,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=9"},
+{"id":"p010","name":"Vitamin C 500mg","price":80,"description":"Immunity booster","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=10"},
+{"id":"p011","name":"Salbutamol Inhaler","price":220,"description":"Asthma inhaler","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=11"},
+{"id":"p012","name":"Amoxicillin Syrup 60ml","price":150,"description":"Antibiotic syrup","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=12"},
+{"id":"p013","name":"Ranitidine 150mg","price":80,"description":"Stomach acid reducer","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=13"},
+{"id":"p014","name":"Pantoprazole ODT 40mg","price":95,"description":"GERD medicine","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=14"},
+{"id":"p015","name":"Cetirizine Syrup 100ml","price":60,"description":"Allergy syrup","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=15"},
+{"id":"p016","name":"Azithral 500mg (Azithromycin)","price":85,"description":"Single dose antibiotic","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=16"},
+{"id":"p017","name":"Cefixime 200mg","price":180,"description":"Antibiotic","offer":10,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=17"},
+{"id":"p018","name":"Omeprazole 20mg","price":60,"description":"Acidity control","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=18"},
+{"id":"p019","name":"Pantocid 40mg (Pantoprazole)","price":70,"description":"Acidity medicine","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=19"},
+{"id":"p020","name":"Multivitamin Capsule (30)","price":250,"description":"Daily multivitamin","offer":10,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=20"},
+{"id":"p021","name":"Diclofenac 50mg","price":40,"description":"Pain reliever","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=21"},
+{"id":"p022","name":"Naproxen 250mg","price":90,"description":"Pain & inflammation","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=22"},
+{"id":"p023","name":"Cefixime Syrup 50ml","price":200,"description":"Antibiotic syrup","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=23"},
+{"id":"p024","name":"Levofloxacin 500mg","price":300,"description":"Antibiotic","offer":10,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=24"},
+{"id":"p025","name":"Metronidazole 400mg","price":60,"description":"Anti-parasitic/antibacterial","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=25"},
+{"id":"p026","name":"Doxycycline 100mg","price":150,"description":"Antibiotic","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=26"},
+{"id":"p027","name":"Levosalbutamol Inhaler","price":450,"description":"Bronchodilator","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=27"},
+{"id":"p028","name":"Montelukast 10mg","price":90,"description":"Asthma / allergy","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=28"},
+{"id":"p029","name":"Prednisolone 5mg","price":120,"description":"Steroid medicine","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=29"},
+{"id":"p030","name":"Omeprazole SR 40mg","price":130,"description":"GERD treatment","offer":10,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=30"},
+{"id":"p031","name":"Iron Folic Acid Tablet","price":60,"description":"For anaemia","offer":5,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=31"},
+{"id":"p032","name":"Calcium + Vitamin D","price":200,"description":"Bone health","offer":10,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=32"},
+{"id":"p033","name":"Fluconazole 150mg","price":140,"description":"Antifungal","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=33"},
+{"id":"p034","name":"Ketoconazole Cream 2%","price":180,"description":"Antifungal cream","offer":5,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=34"},
+{"id":"p035","name":"Hydrocortisone Cream 1%","price":85,"description":"Skin inflammation","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=35"},
+{"id":"p036","name":"Gabapentin 100mg","price":220,"description":"Nerve pain","offer":10,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=36"},
+{"id":"p037","name":"Pregabalin 75mg","price":250,"description":"Nerve pain","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=37"},
+{"id":"p038","name":"Atorvastatin 10mg","price":160,"description":"Cholesterol control","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=38"},
+{"id":"p039","name":"Amlodipine 5mg","price":100,"description":"BP control","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=39"},
+{"id":"p040","name":"Losartan 50mg","price":120,"description":"BP medicine","offer":10,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=40"},
+{"id":"p041","name":"Simvastatin 20mg","price":180,"description":"Cholesterol medicine","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=41"},
+{"id":"p042","name":"Pantoprazole 20mg","price":55,"description":"Acidity relief","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=42"},
+{"id":"p043","name":"Levosulpiride 75mg","price":140,"description":"GI motility","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=43"},
+{"id":"p044","name":"Domperidone 10mg","price":45,"description":"Antiemetic","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=44"},
+{"id":"p045","name":"Ondansetron 4mg","price":60,"description":"Nausea treatment","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=45"},
+{"id":"p046","name":"Salbutamol 4mg","price":40,"description":"Bronchodilator","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=46"},
+{"id":"p047","name":"Montelukast 4mg","price":60,"description":"Allergy & asthma","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=47"},
+{"id":"p048","name":"Levocetirizine 5mg","price":35,"description":"Allergy tablet","offer":0,"rx_required":false,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=48"},
+{"id":"p049","name":"Glyceryl Trinitrate (GTN) 0.4mg","price":120,"description":"Heart medicine","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=49"},
+{"id":"p050","name":"Clopidogrel 75mg","price":150,"description":"Antiplatelet","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=50"},
+{"id":"p051","name":"Atorvastatin 20mg","price":220,"description":"Cholesterol control","offer":10,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=51"},
+{"id":"p052","name":"Insulin (Human) 10ml vial","price":600,"description":"Diabetes injectable","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=52"},
+{"id":"p053","name":"Glimepiride 2mg","price":90,"description":"Diabetes tablet","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=53"},
+{"id":"p054","name":"Sitagliptin 50mg","price":240,"description":"Diabetes medicine","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=54"},
+{"id":"p055","name":"Sodium Chloride IV 0.9% 500ml","price":120,"description":"IV fluid","offer":0,"rx_required":true,"category":"daily","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=55"},
+{"id":"p056","name":"Vitamin B12 Injection 1ml","price":90,"description":"B12 supplement injection","offer":0,"rx_required":true,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=56"},
+{"id":"p057","name":"Calamine Lotion 100ml","price":65,"description":"Skin soothing lotion","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=57"},
+{"id":"p058","name":"Hydroxyzine 25mg","price":140,"description":"Allergy medicine","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=58"},
+{"id":"p059","name":"Clarithromycin 500mg","price":220,"description":"Antibiotic","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=59"},
+{"id":"p060","name":"Flu Vaccine (Seasonal)","price":700,"description":"Seasonal flu vaccine","offer":0,"rx_required":true,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=60"},
+{"id":"p061","name":"Saline Nasal Spray","price":120,"description":"Nasal congestion relief","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=61"},
+{"id":"p062","name":"Antacid Gel 100ml","price":110,"description":"Acidity relief","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=62"},
+{"id":"p063","name":"Benzocaine Ointment","price":95,"description":"Topical pain relief","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=63"},
+{"id":"p064","name":"Oral Rehydration Salt (ORS) Sachet","price":20,"description":"Rehydration","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=64"},
+{"id":"p065","name":"Topical Antifungal Powder","price":90,"description":"Athlete's foot treatment","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=65"},
+{"id":"p066","name":"Orlistat 120mg","price":180,"description":"Weight management","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=66"},
+{"id":"p067","name":"Loratadine 10mg","price":35,"description":"Allergy tablet","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=67"},
+{"id":"p068","name":"Vitamin D3 60k IU","price":150,"description":"Vitamin D high dose","offer":5,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=68"},
+{"id":"p069","name":"Sodium Bicarbonate Antacid","price":40,"description":"Antacid","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=69"},
+{"id":"p070","name":"Mupirocin Ointment","price":180,"description":"Topical antibiotic","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=70"},
+{"id":"p071","name":"Baclofen 10mg","price":130,"description":"Muscle relaxant","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=71"},
+{"id":"p072","name":"Tadalafil 10mg","price":200,"description":"Erectile dysfunction","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=72"},
+{"id":"p073","name":"Sildenafil 50mg","price":180,"description":"Erectile dysfunction","offer":5,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=73"},
+{"id":"p074","name":"Acetylcysteine 200mg","price":120,"description":"Mucolytic","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=74"},
+{"id":"p075","name":"Naproxen SR 500mg","price":140,"description":"Pain relief slow release","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=75"},
+{"id":"p076","name":"Mefenamic Acid 250mg","price":70,"description":"Painkiller","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=76"},
+{"id":"p077","name":"Cholecalciferol 400 IU","price":90,"description":"Vitamin D supplement","offer":0,"rx_required":false,"category":"daily","image":"https://images.unsplash.com/photo-1546595706-6c5a9f3b7f9b?q=80&w=800&auto=format&fit=crop&sig=77"},
+{"id":"p078","name":"Clindamycin 300mg","price":250,"description":"Antibiotic","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584438785722-7a0a2b48f8d1?q=80&w=800&auto=format&fit=crop&sig=78"},
+{"id":"p079","name":"Nitroglycerin 0.4mg Spray","price":180,"description":"Angina relief","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1580281657523-9f0d4b5f3d3a?q=80&w=800&auto=format&fit=crop&sig=79"},
+{"id":"p080","name":"Risperidone 2mg","price":120,"description":"Antipsychotic","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1582719478176-1a5ae0b3b2a6?q=80&w=800&auto=format&fit=crop&sig=80"},
+{"id":"p081","name":"Sertraline 50mg","price":220,"description":"Antidepressant","offer":0,"rx_required":true,"category":"generic","image":"https://images.unsplash.com/photo-1584999732424-5f9f0b7d5a0d?q=80&w=800&auto=format&fit=crop&sig=81"},
+{"id":"p082","name":"Escitalopra
