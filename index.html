@@ -1,53 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Hub Pharmacy</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Health Hub Pharmacy</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <header class="hero">
+    <div class="container">
+      <h1>Health Hub Pharmacy</h1>
+      <p class="subtitle">Authentic Medicines • Home Delivery</p>
+      <a class="cta" id="whatsapp-cta" href="#" target="_blank">Order on WhatsApp</a>
+    </div>
+  </header>
 
-    <header>
-        <h1>Health Hub Pharmacy</h1>
-        <p>Authentic Medicines • Home Delivery Available</p>
-    </header>
-
+  <main class="container">
     <section class="contact">
-        <h2>Contact Details</h2>
-        <p><strong>Phone:</strong> 9413604420</p>
-        <p><strong>WhatsApp:</strong> <a href="https://wa.me/919413604420?text=Hi%20I%20want%20to%20order%20medicine">Chat on WhatsApp</a></p>
+      <h2>Contact</h2>
+      <p><strong>Phone:</strong> <span id="phone">9413604420</span></p>
+      <p><strong>WhatsApp:</strong> <a id="wa-link" href="#" target="_blank">Chat on WhatsApp</a></p>
     </section>
 
     <section class="products">
-        <h2>Available Medicines</h2>
-
-        <div class="product">
-            <h3>Paracetamol 500mg (10)</h3>
-            <p>Fever reducer</p>
-            <span class="price">₹30</span>
-            <span class="offer">20% OFF</span>
-        </div>
-
-        <div class="product">
-            <h3>Cough Syrup 100ml</h3>
-            <p>Cough relief</p>
-            <span class="price">₹90</span>
-            <span class="offer">10% OFF</span>
-        </div>
-
-        <div class="product">
-            <h3>Vitamin C 500mg (10)</h3>
-            <p>Immunity booster</p>
-            <span class="price">₹120</span>
-        </div>
-
+      <h2>Available Medicines</h2>
+      <div id="product-list" class="product-list"></div>
     </section>
+  </main>
 
-    <footer>
-        <p>© 2025 Health Hub Pharmacy</p>
-    </footer>
+  <!-- Order Modal -->
+  <div id="order-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" id="modal-close">✕</button>
+      <h3 id="modal-product-name">Order</h3>
 
-<script src="script.js"></script>
+      <label>Quantity
+        <input id="order-qty" type="number" value="1" min="1" />
+      </label>
+
+      <label>Your Name
+        <input id="order-name" type="text" placeholder="Your name" />
+      </label>
+
+      <label>Address (optional)
+        <textarea id="order-address" placeholder="Delivery address"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button id="order-whatsapp" class="btn-primary">Place Order on WhatsApp</button>
+        <button id="order-save" class="btn-secondary">Save Locally (phone)</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© <span id="year"></span> Health Hub Pharmacy</p>
+      <p class="small">Made with ❤️ — Orders via WhatsApp</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
