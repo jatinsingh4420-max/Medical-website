@@ -1,0 +1,54 @@
+// load JSON and render
+async function loadProducts(){
+  const res = await fetch('products/products_all.json');
+  const products = await res.json();
+
+  // featured
+  const featured = products.slice(0, 8);
+  let html = '';
+  featured.forEach(p => {
+    html += `
+      <div class="product-card" data-id="${p.id}">
+        <img loading="lazy" src="${p.image}" alt="${p.name}">
+        <div class="product-info">
+          <h3>${p.name}</h3>
+          <p>${p.description || ''}</p>
+          <div class="price-row">
+            <div class="price">₹${p.price}</div>
+            <div class="offer">${p.offer||''}</div>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="btn addcart" data-id="${p.id}">Add to cart</button>
+            <button class="btn btn-outline orderwhatsapp" data-id="${p.id}" style="margin-left:8px">Order</button>
+          </div>
+        </div>
+      </div>`;
+  });
+  document.getElementById('featuredList').innerHTML = html;
+
+  // attach events
+  document.querySelectorAll('.orderwhatsapp').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = b.dataset.id;
+      const prod = products.find(x=>x.id===id);
+      const msg = `Order%20Request:%20${encodeURIComponent(prod.name)}%20Qty:%201%20%0APrice:%20₹${prod.price}`;
+      const wa = `https://wa.me/91YOURNUMBER?text=${msg}`;
+      window.open(wa,'_blank');
+    })
+  });
+
+  // add to cart (simple localStorage)
+  document.querySelectorAll('.addcart').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = b.dataset.id;
+      let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+      const existing = cart.find(x=>x.id===id);
+      if(existing) existing.qty++;
+      else cart.push({id:id, qty:1});
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('Added to cart');
+    })
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadProducts);
