@@ -1,0 +1,107 @@
+[
+  {
+    "id": "e001",
+    "name": "Augmentin 625 Duo",
+    "price": 180,
+    "description": "Brand antibiotic by GSK for bacterial infections.",
+    "image": "https://images.unsplash.com/photo-1584395630824-8d79e3fddc43"
+  },
+  {
+    "id": "e002",
+    "name": "Ciplox 500 (Cipla)",
+    "price": 120,
+    "description": "Branded ciprofloxacin by Cipla.",
+    "image": "https://images.unsplash.com/photo-1584438784894-089d6f8b36cb"
+  },
+  {
+    "id": "e003",
+    "name": "Pantocid 40 (Sun Pharma)",
+    "price": 95,
+    "description": "Branded Pantoprazole for acidity.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "e004",
+    "name": "Allegra 120mg (Sanofi)",
+    "price": 220,
+    "description": "Anti-allergic antihistamine.",
+    "image": "https://images.unsplash.com/photo-1561219469-59540f33a5ab"
+  },
+  {
+    "id": "e005",
+    "name": "Crocin Advance",
+    "price": 35,
+    "description": "Premium paracetamol brand by GSK.",
+    "image": "https://images.unsplash.com/photo-1608255546008-904b79a7e52f"
+  },
+  {
+    "id": "e006",
+    "name": "Dolo 650 (Micro Labs)",
+    "price": 40,
+    "description": "Top-selling branded fever reducer.",
+    "image": "https://images.unsplash.com/photo-1608255546008-904b79a7e52f"
+  },
+  {
+    "id": "e007",
+    "name": "Shelcal 500 (Torrent)",
+    "price": 120,
+    "description": "Calcium supplement.",
+    "image": "https://images.unsplash.com/photo-1580841680382-d58ba2bb7104"
+  },
+  {
+    "id": "e008",
+    "name": "Zincovit (UC Pharma)",
+    "price": 95,
+    "description": "Premium immunity multivitamin.",
+    "image": "https://images.unsplash.com/photo-1580841680382-d58ba2bb7104"
+  },
+  {
+    "id": "e009",
+    "name": "Benadryl Cough Syrup",
+    "price": 110,
+    "description": "Brand cough syrup for dry and wet cough.",
+    "image": "https://images.unsplash.com/photo-1612731486621-da75a9887d44"
+  },
+  {
+    "id": "e010",
+    "name": "Himalaya Liv.52",
+    "price": 130,
+    "description": "Liver protection and digestion support.",
+    "image": "https://images.unsplash.com/photo-1595436244005-18aaedc3a4b3"
+  },
+  {
+    "id": "e011",
+    "name": "Digene Mint Tablets",
+    "price": 45,
+    "description": "Brand acidity relief chewable.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "e012",
+    "name": "Volini Gel (Sun Pharma)",
+    "price": 130,
+    "description": "Muscle pain relief gel.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "e013",
+    "name": "Moov Spray (Reckitt)",
+    "price": 150,
+    "description": "Trusted pain relief spray.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "e014",
+    "name": "Saridon (Bayer)",
+    "price": 35,
+    "description": "Popular headache relief brand.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  },
+  {
+    "id": "e015",
+    "name": "Supradyn Daily",
+    "price": 120,
+    "description": "Complete multivitamin from Bayer.",
+    "image": "https://images.unsplash.com/photo-1580841680382-d58ba2bb7104"
+  }
+]
