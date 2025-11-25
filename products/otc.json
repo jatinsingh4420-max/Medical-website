@@ -1,0 +1,114 @@
+[
+  {
+    "id": "o001",
+    "name": "Vicks Vaporub 25ml",
+    "price": 95,
+    "description": "Relief from cold, headache and body ache.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "o002",
+    "name": "Iodex Balm",
+    "price": 110,
+    "description": "Trusted pain relief balm.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "o003",
+    "name": "Zandu Balm",
+    "price": 95,
+    "description": "Effective for headache and cold.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "o004",
+    "name": "Glucon-D Orange",
+    "price": 55,
+    "description": "Instant energy drink mix.",
+    "image": "https://images.unsplash.com/photo-1580841680382-d58ba2bb7104"
+  },
+  {
+    "id": "o005",
+    "name": "ORS Hydration Pack",
+    "price": 25,
+    "description": "Prevents dehydration and restores electrolytes.",
+    "image": "https://images.unsplash.com/photo-1547483238-2b94e6222c19"
+  },
+  {
+    "id": "o006",
+    "name": "Boroline Cream",
+    "price": 40,
+    "description": "Night repair cream for dry skin.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "o007",
+    "name": "BoroPlus Antiseptic Cream",
+    "price": 45,
+    "description": "Protection from cuts, burns and rashes.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "o008",
+    "name": "Savlon Antiseptic Liquid",
+    "price": 65,
+    "description": "Disinfectant for cuts and wounds.",
+    "image": "https://images.unsplash.com/photo-1584395630824-8d79e3fddc43"
+  },
+  {
+    "id": "o009",
+    "name": "Dettol Liquid 60ml",
+    "price": 35,
+    "description": "Trusted antiseptic liquid.",
+    "image": "https://images.unsplash.com/photo-1584395630824-8d79e3fddc43"
+  },
+  {
+    "id": "o010",
+    "name": "Himalaya Neem Facewash",
+    "price": 90,
+    "description": "Helps prevent acne and pimples.",
+    "image": "https://images.unsplash.com/photo-1595436244005-18aaedc3a4b3"
+  },
+  {
+    "id": "o011",
+    "name": "Nivea Soft Cream",
+    "price": 120,
+    "description": "Daily use moisturizing cream.",
+    "image": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9"
+  },
+  {
+    "id": "o012",
+    "name": "Volini Spray",
+    "price": 150,
+    "description": "Effective for muscle and joint pain.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "o013",
+    "name": "Moov Pain Relief Cream",
+    "price": 145,
+    "description": "Pain relief formula for muscles.",
+    "image": "https://images.unsplash.com/photo-1606811844475-9d996f6fb0e5"
+  },
+  {
+    "id": "o014",
+    "name": "Dabur Honey 250g",
+    "price": 110,
+    "description": "100% pure honey for daily immunity.",
+    "image": "https://images.unsplash.com/photo-1514996937319-344454492b37"
+  },
+  {
+    "id": "o015",
+    "name": "ENO Lemon Sachet",
+    "price": 10,
+    "description": "Relieves acidity instantly.",
+    "image": "https://images.unsplash.com/photo-1569443693539-175ea9f607be"
+  },
+  {
+    "id": "o016",
+    "name": "Glycerin Bottle",
+    "price": 35,
+    "description": "Moisturizer for dry skin and cracks.",
+    "image": "https://images.unsplash.com/photo-1580281657523-9f04dbf53da7"
+  }
+]
