@@ -18,7 +18,7 @@
   <main class="container">
     <section class="contact">
       <h2>Contact</h2>
-      <p><strong>Phone:</strong> <span id="phone">9413604420</span></p>
+      <p><strong>Phone:</strong> 9413604420</p>
       <p><strong>WhatsApp:</strong> <a id="wa-link" href="#" target="_blank">Chat on WhatsApp</a></p>
     </section>
 
@@ -28,7 +28,7 @@
     </section>
   </main>
 
-  <!-- Order Modal -->
+  <!-- ORDER MODAL -->
   <div id="order-modal" class="modal hidden" aria-hidden="true">
     <div class="modal-card">
       <button class="modal-close" id="modal-close">✕</button>
@@ -42,33 +42,29 @@
         <input id="order-name" type="text" placeholder="Your name" />
       </label>
 
-      <label>Address (optional)
+      <label>Address
         <textarea id="order-address" placeholder="Delivery address"></textarea>
+      </label>
+
+      <label>Phone
+        <input id="order-phone" type="text" placeholder="Phone number" />
       </label>
 
       <div class="modal-actions">
         <button id="order-whatsapp" class="btn-primary">Place Order on WhatsApp</button>
-        <button id="order-save" class="btn-secondary">Save Locally (phone)</button>
+        <button id="order-form" class="btn-secondary">Place Order on Google Form</button>
+        <button id="order-save" class="btn-secondary">Save Locally</button>
       </div>
     </div>
   </div>
 
   <footer class="footer">
-  
     <div class="container">
       <p>© <span id="year"></span> Health Hub Pharmacy</p>
-      <p class="small">Made with ❤️ — Orders via WhatsApp</p>
+      <p class="small">Made with ❤️ — Orders via WhatsApp & Google Form</p>
     </div>
   </footer>
 
   <script src="script.js"></script>
 </body>
 </html>
-<div class="modal-actions">
-    <button id="order-whatsapp" class="btn-primary">Place Order on WhatsApp</button>
-
-    <!-- ⭐ Google Form Button ⭐ -->
-    <button id="order-form" class="btn-secondary">Place Order on Google Form</button>
-
-    <button id="order-save" class="btn-secondary">Save Locally</button>
-</div>
